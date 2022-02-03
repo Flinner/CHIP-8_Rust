@@ -1,4 +1,4 @@
-use crate::gui::{self, draw_pixel};
+use crate::gui::{self, draw_from_mem, draw_pixel};
 use raylib::prelude::RaylibDrawHandle;
 
 #[allow(clippy::upper_case_acronyms)]
@@ -8,7 +8,7 @@ pub struct CPU {
     pub mem: [u8; 512],
     /// Program Counter
     pub pc: u16,
-    pub index_register: u16,
+    pub index_register: usize,
     pub stack: [u16; 16],
     // delay_timer: u8,
     // sound_timer: u8,
@@ -95,6 +95,13 @@ impl CPU {
         }: Decoded,
         d: &mut RaylibDrawHandle,
     ) {
+        let reg = self.reg;
+        let mem = self.mem;
+        let i_reg = self.index_register;
+
+        // memory range that should be displayed
+        let display_range = i_reg..=(i_reg + (n as usize));
+
         match (n1, x, y, n) {
             // clear screen
             (0x0, 0, 0xE, 0) => gui::clear(d),
@@ -105,9 +112,9 @@ impl CPU {
             // add NN to Register x
             (0x7, _, _, _) => self.reg[x] += nn,
             // set index Register to NNN
-            (0xA, _, _, _) => self.index_register = nnn,
-            // Display x y n
-            (0xD, _, _, _) => draw_pixel(d, self.reg[x], self.reg[y], n),
+            (0xA, _, _, _) => self.index_register = nnn as usize,
+            // Display/Draw x y n
+            (0xD, _, _, _) => gui::draw_from_mem(d, reg[x], reg[y], &mem[display_range]),
             _ => todo!("Instruction Not Yet Implemented!"),
         };
     }
