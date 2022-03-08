@@ -1,13 +1,6 @@
 use std::{fs::File, io::Read, time::Duration};
 
-use crate::{
-    display::Display,
-    gui::{self, draw_from_mem},
-};
-use raylib::{
-    color::Color,
-    prelude::{RaylibDraw, RaylibDrawHandle},
-};
+use crate::display::{self, DISPLAY};
 
 #[allow(clippy::upper_case_acronyms)]
 #[derive(Debug)]
@@ -21,7 +14,7 @@ pub struct CPU {
     // delay_timer: u8,
     // sound_timer: u8,
     pub reg: [u8; 16],
-    pub display: Display,
+    // pub display: Display,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -61,7 +54,6 @@ impl CPU {
             index_register: 0,
             stack: Default::default(),
             reg: Default::default(),
-            display: Default::default(),
         }
     }
     pub fn load_rom(&mut self, path: &str) {
@@ -116,7 +108,6 @@ impl CPU {
             nn,
             nnn,
         }: Decoded,
-        d: &mut RaylibDrawHandle,
     ) {
         let reg = &mut self.reg;
         let mem = &mut self.mem;
@@ -124,10 +115,11 @@ impl CPU {
 
         // memory range that should be displayed
         let disp_mem = i_reg..(i_reg + (n as usize));
-        // println!("{:x}{:x} {:x}{:x}", n1, x, y, n);
+        println!("{:x}{:x} {:x}{:x}", n1, x, y, n);
         match (n1, x, y, n) {
             // clear screen
-            (0x0, 0, 0xE, 0) => gui::clear(d),
+            // (0x0, 0, 0xE, 0) => gui::clear(),
+            (0x0, 0, 0xE, 0) => unsafe { DISPLAY.clear() },
             // Jump to NNN
             (0x1, _, _, _) => self.pc = nnn,
             // set Register x to NN
@@ -137,17 +129,15 @@ impl CPU {
             // set index Register to NNN
             (0xA, _, _, _) => self.index_register = nnn as usize,
             // Display/Draw x y n
-            (0xD, _, _, _) => {
-                self.reg[0xF] =
-                    gui::draw_from_mem(d, &mut reg[..], x, y, &mem[disp_mem], &mut self.display)
+            (0xD, x, y, _n) => {
+                self.reg[0xF] = unsafe { DISPLAY.update_from_mem(reg[x], reg[y], &mem[disp_mem]) }
             }
-            // _ => (),
-            _ => d.draw_text("Instruction not found!", 20, 20, 30, Color::WHITE),
-            // _ => todo!("Instruction Not Yet Implemented!"),
+            _ => (),
+            // a => todo!("Instruction Not yet Implemented!: {a:?}"),
         };
     }
-    pub fn decode_and_execture(&mut self, d: &mut RaylibDrawHandle) {
+    pub fn decode_and_execture(&mut self) {
         let decoded = self.decode();
-        self.exectue(decoded, d)
+        self.exectue(decoded)
     }
 }

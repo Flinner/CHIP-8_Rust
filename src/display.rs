@@ -1,37 +1,54 @@
-use raylib::{
-    color::Color,
-    prelude::{RaylibDraw, RaylibDrawHandle},
-};
+const DISPLAY_X_PIXELS: usize = 64;
+const DISPLAY_Y_PIXELS: usize = 32;
 
-use crate::gui::{DISPLAY_HEIGHT, DISPLAY_WIDTH, PIXEL_HEIGHT, PIXEL_WIDTH};
+pub static mut DISPLAY: Display = Display::default();
 
-const DISPLAY_HEIGHT_U8: usize = (DISPLAY_HEIGHT / 8) as usize;
-const DISPLAY_WIDTH_U8: usize = (DISPLAY_WIDTH / 8) as usize;
-
-#[derive(Debug, Default)]
 pub struct Display {
-    /// 8 pixels per `u8` entry.
-    pub buffer: [u8; (DISPLAY_HEIGHT_U8 * DISPLAY_WIDTH_U8)],
-    /// Background, usually be white
-    pub bg: Color,
-    /// Foreground (drawn on), usually black
-    pub fg: Color,
-    /// Width/Height of a singel pixel
+    pub buffer: [[u8; DISPLAY_X_PIXELS]; DISPLAY_Y_PIXELS], //TODO: make it a 1D array!
     pub scale: usize,
 }
 
 impl Display {
-    /// Renders bufffer content to Raylib GUI
-    pub fn render(&self, d: &mut RaylibDrawHandle) {
-        for x in 0..DISPLAY_WIDTH_U8 {
-            for y in 0..DISPLAY_HEIGHT_U8 {
-                d.draw_rectangle(x as i32, y as i32, PIXEL_WIDTH, PIXEL_HEIGHT, self.fg);
-            }
+    pub const fn default() -> Self {
+        Self {
+            buffer: [[0; DISPLAY_X_PIXELS]; DISPLAY_Y_PIXELS],
+            scale: 1,
         }
     }
-}
 
-// iterate over bits
-fn binary_iter(n: u8) -> impl Iterator<Item = u8> {
-    (1..=8).map(move |i| (n << (8 - i)) >> 7)
+    pub fn update_from_mem(&mut self, vx: u8, vy: u8, disp_mem: &[u8]) -> u8 {
+        let mut vx = vx as usize;
+        let mut vy = vy as usize;
+
+        let mut collision = false;
+
+        eprintln!("original \t byte \t new \t collision");
+        for byte in disp_mem {
+            let original_buffer_byte = self.buffer[vy][vx];
+            self.buffer[vy][vx] ^= byte;
+            let new_buffer_byte = self.buffer[vy][vx];
+            collision |= (original_buffer_byte & new_buffer_byte) != original_buffer_byte;
+
+            // eprintln!(
+            //     "{original_buffer_byte:#05b}\t {byte:#05b}\t = {new_buffer_byte:#05b} \t {collision}"
+            // );
+
+            vx += 1;
+            // go to next row if full
+            if vx > DISPLAY_X_PIXELS {
+                vx = 0;
+                vy += 1;
+            }
+        }
+        eprintln!("updating from memory");
+        // this goes to VF
+        match collision {
+            true => 1,
+            false => 0,
+        }
+    }
+    pub fn clear(&mut self) {
+        self.buffer = [[0; DISPLAY_X_PIXELS]; DISPLAY_Y_PIXELS];
+        eprintln!("cleared screen!")
+    }
 }
