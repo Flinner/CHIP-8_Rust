@@ -1,11 +1,19 @@
-use crate::gui::{self, draw_from_mem, draw_pixel};
-use raylib::prelude::RaylibDrawHandle;
+use std::{fs::File, io::Read, time::Duration};
+
+use crate::{
+    display::Display,
+    gui::{self, draw_from_mem},
+};
+use raylib::{
+    color::Color,
+    prelude::{RaylibDraw, RaylibDrawHandle},
+};
 
 #[allow(clippy::upper_case_acronyms)]
 #[derive(Debug)]
 pub struct CPU {
     /// Memory 4K bytes
-    pub mem: [u8; 512],
+    pub mem: [u8; 4096],
     /// Program Counter
     pub pc: u16,
     pub index_register: usize,
@@ -13,6 +21,7 @@ pub struct CPU {
     // delay_timer: u8,
     // sound_timer: u8,
     pub reg: [u8; 16],
+    pub display: Display,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -47,12 +56,26 @@ impl Default for CPU {
 impl CPU {
     pub fn new() -> Self {
         CPU {
-            mem: [0; 512],
+            mem: [0; 4096],
             pc: 0,
             index_register: 0,
             stack: Default::default(),
             reg: Default::default(),
+            display: Default::default(),
         }
+    }
+    pub fn load_rom(&mut self, path: &str) {
+        let mut file_content = Vec::with_capacity(4096);
+        file_content.append(&mut vec![0; 512]);
+
+        let mut file = File::open(&path).expect("Unable to open file");
+        file.read_to_end(&mut file_content).expect("Unable to read");
+
+        file_content.resize(4096, 0);
+
+        self.mem = file_content.try_into().unwrap_or_else(|v: Vec<u8>| {
+            panic!("Expected a Vec of length {} but it was {}", 512, v.len())
+        })
     }
     fn fetch(&mut self) -> u16 {
         let pc = self.pc as usize;
@@ -95,13 +118,13 @@ impl CPU {
         }: Decoded,
         d: &mut RaylibDrawHandle,
     ) {
-        let reg = self.reg;
-        let mem = self.mem;
+        let reg = &mut self.reg;
+        let mem = &mut self.mem;
         let i_reg = self.index_register;
 
         // memory range that should be displayed
-        let display_range = i_reg..=(i_reg + (n as usize));
-
+        let disp_mem = i_reg..(i_reg + (n as usize));
+        // println!("{:x}{:x} {:x}{:x}", n1, x, y, n);
         match (n1, x, y, n) {
             // clear screen
             (0x0, 0, 0xE, 0) => gui::clear(d),
@@ -114,8 +137,17 @@ impl CPU {
             // set index Register to NNN
             (0xA, _, _, _) => self.index_register = nnn as usize,
             // Display/Draw x y n
-            (0xD, _, _, _) => gui::draw_from_mem(d, reg[x], reg[y], &mem[display_range]),
-            _ => todo!("Instruction Not Yet Implemented!"),
+            (0xD, _, _, _) => {
+                self.reg[0xF] =
+                    gui::draw_from_mem(d, &mut reg[..], x, y, &mem[disp_mem], &mut self.display)
+            }
+            // _ => (),
+            _ => d.draw_text("Instruction not found!", 20, 20, 30, Color::WHITE),
+            // _ => todo!("Instruction Not Yet Implemented!"),
         };
+    }
+    pub fn decode_and_execture(&mut self, d: &mut RaylibDrawHandle) {
+        let decoded = self.decode();
+        self.exectue(decoded, d)
     }
 }
