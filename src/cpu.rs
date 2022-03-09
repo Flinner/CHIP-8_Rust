@@ -115,7 +115,7 @@ impl CPU {
 
         // memory range that should be displayed
         let disp_mem = i_reg..(i_reg + (n as usize));
-        println!("{:x}{:x} {:x}{:x}", n1, x, y, n);
+        //println!("{:x}{:x} {:x}{:x}", n1, x, y, n);
         match (n1, x, y, n) {
             // clear screen
             // (0x0, 0, 0xE, 0) => gui::clear(),

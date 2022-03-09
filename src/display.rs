@@ -48,6 +48,7 @@ impl Display {
         }
     }
     pub fn clear(&mut self) {
+        // TOOD: just clear through renderer
         self.buffer = [[0; DISPLAY_X_PIXELS / 8]; DISPLAY_Y_PIXELS];
         eprintln!("cleared screen!")
     }
