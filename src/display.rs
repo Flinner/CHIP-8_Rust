@@ -1,18 +1,18 @@
-const DISPLAY_X_PIXELS: usize = 64;
-const DISPLAY_Y_PIXELS: usize = 32;
+pub const DISPLAY_X_PIXELS: usize = 64;
+pub const DISPLAY_Y_PIXELS: usize = 32;
 
 pub static mut DISPLAY: Display = Display::default();
 
 pub struct Display {
-    pub buffer: [[u8; DISPLAY_X_PIXELS]; DISPLAY_Y_PIXELS], //TODO: make it a 1D array!
+    pub buffer: [[u8; DISPLAY_X_PIXELS / 8]; DISPLAY_Y_PIXELS], //TODO: make it a 1D array!
     pub scale: usize,
 }
 
 impl Display {
     pub const fn default() -> Self {
         Self {
-            buffer: [[0; DISPLAY_X_PIXELS]; DISPLAY_Y_PIXELS],
-            scale: 1,
+            buffer: [[0; DISPLAY_X_PIXELS / 8]; DISPLAY_Y_PIXELS],
+            scale: 10,
         }
     }
 
@@ -35,7 +35,7 @@ impl Display {
 
             vx += 1;
             // go to next row if full
-            if vx > DISPLAY_X_PIXELS {
+            if vx > DISPLAY_X_PIXELS / 8 {
                 vx = 0;
                 vy += 1;
             }
@@ -48,7 +48,7 @@ impl Display {
         }
     }
     pub fn clear(&mut self) {
-        self.buffer = [[0; DISPLAY_X_PIXELS]; DISPLAY_Y_PIXELS];
+        self.buffer = [[0; DISPLAY_X_PIXELS / 8]; DISPLAY_Y_PIXELS];
         eprintln!("cleared screen!")
     }
 }
