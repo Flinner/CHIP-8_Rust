@@ -2,6 +2,8 @@
 
 mod raylib;
 
+use ::raylib::consts::KeyboardKey;
+
 use crate::display::DISPLAY;
 
 pub static mut RENDER_BACKEND: Option<Backend> = None;
@@ -25,6 +27,11 @@ impl Backend {
     pub fn should_close(&mut self) -> bool {
         match self {
             Self::Raylib { rl, thread: _ } => raylib::should_close(rl),
+        }
+    }
+    pub fn is_key_pressed(&mut self, key: KeyboardKey) -> bool {
+        match self {
+            Self::Raylib { rl, thread: _ } => rl.is_key_up(key),
         }
     }
 }

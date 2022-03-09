@@ -20,7 +20,6 @@ pub fn render(rl: &mut RaylibHandle, thread: &mut RaylibThread, display: &Displa
             })
         }
         y += scale;
-        println!("y: {y}, x: {x}");
         x = 0;
     }
 }

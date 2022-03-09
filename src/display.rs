@@ -22,11 +22,10 @@ impl Display {
 
         let mut collision = false;
 
-        eprintln!("original \t byte \t new \t collision");
         for byte in disp_mem {
-            let original_buffer_byte = self.buffer[vy][vx];
-            self.buffer[vy][vx] ^= byte;
-            let new_buffer_byte = self.buffer[vy][vx];
+            let original_buffer_byte = self.buffer[vy][vx / 8];
+            self.buffer[vy][vx / 8] ^= byte;
+            let new_buffer_byte = self.buffer[vy][vx / 8];
             collision |= (original_buffer_byte & new_buffer_byte) != original_buffer_byte;
 
             // eprintln!(
@@ -34,8 +33,9 @@ impl Display {
             // );
 
             vx += 1;
+            println!("vx: {vx}");
             // go to next row if full
-            if vx > DISPLAY_X_PIXELS / 8 {
+            if (vx / 8) > DISPLAY_X_PIXELS {
                 vx = 0;
                 vy += 1;
             }

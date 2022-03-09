@@ -2,6 +2,25 @@ use std::{fs::File, io::Read, time::Duration};
 
 use crate::display::{self, DISPLAY};
 
+const FONTS: [u8; 80] = [
+    0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+    0x20, 0x60, 0x20, 0x20, 0x70, // 1
+    0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+    0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+    0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+    0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+    0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+    0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+    0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+    0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+    0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+    0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+    0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+    0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+    0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+    0xF0, 0x80, 0xF0, 0x80, 0x80, // F
+];
+
 #[allow(clippy::upper_case_acronyms)]
 #[derive(Debug)]
 pub struct CPU {
@@ -54,6 +73,12 @@ impl CPU {
             index_register: 0,
             stack: Default::default(),
             reg: Default::default(),
+        }
+    }
+    pub fn load_default_font(&mut self) {
+        for (i, &byte) in FONTS.iter().enumerate() {
+            let starting_mem = 0x50;
+            self.mem[i + starting_mem] = byte;
         }
     }
     pub fn load_rom(&mut self, path: &str) {
@@ -115,10 +140,10 @@ impl CPU {
 
         // memory range that should be displayed
         let disp_mem = i_reg..(i_reg + (n as usize));
-        //println!("{:x}{:x} {:x}{:x}", n1, x, y, n);
+        println!("{:x}{:x} {:x}{:x}", n1, x, y, n);
         match (n1, x, y, n) {
             // clear screen
-            // (0x0, 0, 0xE, 0) => gui::clear(),
+            (0, 0, 0, 0) => eprintln!("uninitialized memory"),
             (0x0, 0, 0xE, 0) => unsafe { DISPLAY.clear() },
             // Jump to NNN
             (0x1, _, _, _) => self.pc = nnn,
@@ -132,8 +157,8 @@ impl CPU {
             (0xD, x, y, _n) => {
                 self.reg[0xF] = unsafe { DISPLAY.update_from_mem(reg[x], reg[y], &mem[disp_mem]) }
             }
-            _ => (),
-            // a => todo!("Instruction Not yet Implemented!: {a:?}"),
+            // _ => (),
+            a => todo!("Instruction Not yet Implemented!: {a:x?}"),
         };
     }
     pub fn decode_and_execture(&mut self) {
