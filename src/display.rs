@@ -28,12 +28,12 @@ impl Display {
             let new_buffer_byte = self.buffer[vy][vx / 8];
             collision |= (original_buffer_byte & new_buffer_byte) != original_buffer_byte;
 
-            // eprintln!(
-            //     "{original_buffer_byte:#05b}\t {byte:#05b}\t = {new_buffer_byte:#05b} \t {collision}"
-            // );
+            trace!(
+                "{original_buffer_byte:#05b}, {byte:#05b}, = {new_buffer_byte:#05b}, {collision}"
+            );
 
             vx += 1;
-            println!("vx: {vx}");
+            trace!("Vx: {vx:X} Vy: {vy:X}");
             // go to next row if full
             if (vx / 8) > DISPLAY_X_PIXELS {
                 vx = 0;

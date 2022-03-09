@@ -7,3 +7,5 @@ edition = "2021"
 
 [dependencies]
 raylib = { version = "3.7" }
+log = "0.4"
+pretty_env_logger = "0.4"
