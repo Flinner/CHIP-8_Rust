@@ -1,6 +1,7 @@
 //mod raylib;
 
 mod raylib;
+mod terminal;
 
 use ::raylib::consts::KeyboardKey;
 
@@ -13,6 +14,7 @@ pub enum Backend {
         rl: ::raylib::RaylibHandle,
         thread: ::raylib::RaylibThread,
     },
+    Terminal,
 }
 
 impl Backend {
@@ -21,17 +23,14 @@ impl Backend {
 
         match self {
             Self::Raylib { rl, thread } => raylib::render(rl, thread, display),
+            Self::Terminal => terminal::render(display),
         };
     }
 
     pub fn should_close(&mut self) -> bool {
         match self {
             Self::Raylib { rl, thread: _ } => raylib::should_close(rl),
-        }
-    }
-    pub fn is_key_pressed(&mut self, key: KeyboardKey) -> bool {
-        match self {
-            Self::Raylib { rl, thread: _ } => rl.is_key_up(key),
+            Self::Terminal => false,
         }
     }
 }

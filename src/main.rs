@@ -14,10 +14,12 @@ fn main() {
     cpu.pc = 0x200;
 
     // initialize renderer here!
-    let (rl, thread) = //.
-	raylib::init().size(640, 320).title("CHIP-8 Emulator").build();
+    // let (rl, thread) = //.
+    // 	raylib::init().size(640, 320).title("CHIP-8 Emulator").build();
 
-    unsafe { RENDER_BACKEND = Some(Backend::Raylib { rl, thread }) };
+    //unsafe { RENDER_BACKEND = Some(Backend::Raylib { rl, thread }) };
+    unsafe { RENDER_BACKEND = Some(Backend::Terminal) };
+
     let renderer = unsafe { &mut RENDER_BACKEND.as_mut().unwrap() };
 
     let mut buf = String::new();
