@@ -31,5 +31,7 @@ pub(super) fn draw(cpu: &mut CPU, x: usize, y: usize, n: u8) {
 
     // memory range that should be displayed
     let disp_mem = i_reg..(i_reg + (n as usize));
-    cpu.reg[0xF] = unsafe { DISPLAY.update_from_mem(cpu.reg[x], cpu.reg[y], &cpu.mem[disp_mem]) }
+    cpu.reg[0xF] = unsafe { DISPLAY.update_from_mem(cpu.reg[x], cpu.reg[y], &cpu.mem[disp_mem]) };
+
+    trace!("reg[F] = {}", cpu.reg[0xF])
 }

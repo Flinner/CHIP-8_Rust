@@ -94,10 +94,7 @@ impl CPU {
             let starting_mem = 512;
             self.mem[i + starting_mem] = byte;
         }
-
-        // self.mem = file_content.try_into().unwrap_or_else(|v: Vec<u8>| {
-        //     panic!("Expected a Vec of length {} but it was {}", 512, v.len())
-        // })
+        info!("ROM loaded!");
     }
     fn fetch(&mut self) -> u16 {
         let pc = self.pc as usize;
@@ -139,10 +136,7 @@ impl CPU {
             nnn,
         }: Decoded,
     ) {
-        trace!(
-            "decoded: {n1:X}, {x:X}, {y:X}, {n:X}; address: {:X}",
-            self.pc - 2
-        );
+        trace!("decoded: {n1:X}{x:X}{y:X}{n:X}; PC: {:X}", self.pc - 2);
         match (n1, x, y, n) {
             (0, 0, 0, 0) => warn!("Uninitialized memory!"),
             (0x0, 0, 0xE, 0) => opcodes::clear_screen(),
@@ -159,6 +153,10 @@ impl CPU {
             // _ => (),
             a => todo!("Instruction Not yet Implemented!: {a:X?}"),
         };
+        trace!("reg: {:X?}", self.reg);
+        trace!("index_reg: {:X?}", self.index_register);
+        trace!("pc: {:X?}", self.pc);
+        //trace!("stack_pointer: {:?}", self.??);
     }
     pub fn decode_and_execture(&mut self) {
         let decoded = self.decode();

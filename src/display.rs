@@ -19,6 +19,8 @@ impl Display {
     pub fn update_from_mem(&mut self, vx: u8, vy: u8, disp_mem: &[u8]) -> u8 {
         let mut vx = vx as usize;
         let mut vy = vy as usize;
+        trace!("Vx: {vx:X} Vy: {vy:X}");
+        trace!("dis_mem: {:X?}", disp_mem);
 
         let mut collision = false;
 
@@ -26,10 +28,17 @@ impl Display {
             let original_buffer_byte = self.buffer[vy][vx / 8];
             self.buffer[vy][vx / 8] ^= byte;
             let new_buffer_byte = self.buffer[vy][vx / 8];
+            trace!(
+                "updated buffer ({},{vy}), {} => {}",
+                vx / 8,
+                new_buffer_byte,
+                original_buffer_byte
+            );
+
             collision |= (original_buffer_byte & new_buffer_byte) != original_buffer_byte;
 
             trace!(
-                "{original_buffer_byte:#05b}, {byte:#05b}, = {new_buffer_byte:#05b}, {collision}"
+                "{original_buffer_byte:#09b} ^ {byte:#09b} = {new_buffer_byte:#09b} | {collision}"
             );
 
             vx += 1;
@@ -40,7 +49,7 @@ impl Display {
                 vy += 1;
             }
         }
-        eprintln!("updating from memory");
+        trace!("updated Display from memory");
         // this goes to VF
         match collision {
             true => 1,
