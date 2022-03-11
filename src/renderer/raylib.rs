@@ -14,10 +14,8 @@ pub fn render(rl: &mut RaylibHandle, thread: &mut RaylibThread, display: &Displa
     let scale = display.scale as i32;
     for row in display.buffer {
         for byte in row {
-            binary_iter(byte).for_each(|bit| {
-                d.draw_rectangle(x, y, scale, scale, bit_color(bit));
-                x += scale;
-            })
+            d.draw_rectangle(x, y, scale, scale, bit_color(byte));
+            x += scale;
         }
         y += scale;
         x = 0;
