@@ -3,11 +3,14 @@
 mod raylib;
 mod terminal;
 
-use ::raylib::consts::KeyboardKey;
-
 use crate::display::DISPLAY;
 
-pub static mut RENDER_BACKEND: Option<Backend> = None;
+static mut RENDER_BACKEND: Option<Backend> = None;
+
+pub enum BackendChoice {
+    Raylib,
+    Terminal,
+}
 
 pub enum Backend {
     Raylib {
@@ -15,6 +18,24 @@ pub enum Backend {
         thread: ::raylib::RaylibThread,
     },
     Terminal,
+}
+
+pub fn init(choice: BackendChoice) -> &'static mut Backend {
+    match choice {
+        BackendChoice::Raylib => {
+            let (rl, thread) = //.
+	::raylib::init().size(640, 320).title("CHIP-8 Emulator").build();
+            unsafe { RENDER_BACKEND = Some(Backend::Raylib { rl, thread }) };
+        }
+        BackendChoice::Terminal => {
+            unsafe { RENDER_BACKEND = Some(Backend::Terminal) };
+        }
+    }
+    self::get()
+}
+
+pub fn get() -> &'static mut Backend {
+    unsafe { RENDER_BACKEND.as_mut().unwrap() }
 }
 
 impl Backend {
