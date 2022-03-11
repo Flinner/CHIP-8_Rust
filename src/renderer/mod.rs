@@ -36,7 +36,6 @@ impl Backend {
 }
 
 // iterate over bits
-// TODO: use 1 bit size!
 pub fn binary_iter(n: u8) -> impl Iterator<Item = u8> {
     (1..=8).map(move |i| (n << (8 - i)) >> 7)
 }
