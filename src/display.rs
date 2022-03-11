@@ -1,56 +1,50 @@
+use crate::renderer::binary_iter;
+
 pub const DISPLAY_X_PIXELS: usize = 64;
 pub const DISPLAY_Y_PIXELS: usize = 32;
 
 pub static mut DISPLAY: Display = Display::default();
 
 pub struct Display {
-    pub buffer: [[u8; DISPLAY_X_PIXELS / 8]; DISPLAY_Y_PIXELS], //TODO: make it a 1D array!
+    pub buffer: [[u8; DISPLAY_X_PIXELS]; DISPLAY_Y_PIXELS], //TODO: make it a 1D array!
     pub scale: usize,
 }
 
 impl Display {
     pub const fn default() -> Self {
         Self {
-            buffer: [[0; DISPLAY_X_PIXELS / 8]; DISPLAY_Y_PIXELS],
+            buffer: [[0; DISPLAY_X_PIXELS]; DISPLAY_Y_PIXELS],
             scale: 10,
         }
     }
 
     pub fn update_from_mem(&mut self, vx: u8, vy: u8, disp_mem: &[u8]) -> u8 {
-        let mut vx = vx as usize;
-        let mut vy = vy as usize;
+        let vx = vx as usize % DISPLAY_X_PIXELS;
+        let vy = vy as usize % DISPLAY_Y_PIXELS;
         trace!("Vx: {vx:X} Vy: {vy:X}");
         trace!("dis_mem: {:X?}", disp_mem);
 
         let mut collision = false;
 
-        for byte in disp_mem {
-            let original_buffer_byte = self.buffer[vy][vx / 8];
-            self.buffer[vy][vx / 8] ^= byte;
-            let new_buffer_byte = self.buffer[vy][vx / 8];
-            trace!(
-                "updated buffer ({},{vy}), {} => {}",
-                vx / 8,
-                new_buffer_byte,
-                original_buffer_byte
-            );
+        for (i, &byte) in disp_mem.iter().enumerate() {
+            let y = vy + i;
+            if y > DISPLAY_Y_PIXELS {
+                continue;
+            };
+            for (j, bit) in binary_iter(byte).enumerate() {
+                let x = vx + j;
 
-            collision |= (original_buffer_byte & new_buffer_byte) != original_buffer_byte;
+                if x >= DISPLAY_X_PIXELS {
+                    continue;
+                };
 
-            trace!(
-                "{original_buffer_byte:#09b} ^ {byte:#09b} = {new_buffer_byte:#09b} | {collision}"
-            );
+                let orig_buf_bit = self.buffer[y][x];
+                self.buffer[y][x] ^= bit;
+                let new_buf_bit = self.buffer[y][x];
 
-            vx += 1;
-            trace!("Vx: {vx:X} Vy: {vy:X}");
-            // go to next row if full
-            if (vx / 8) > DISPLAY_X_PIXELS {
-                vx = 0;
-                vy += 1;
+                collision |= (orig_buf_bit & new_buf_bit) != orig_buf_bit;
             }
         }
-        trace!("updated Display from memory");
-        // this goes to VF
         match collision {
             true => 1,
             false => 0,
@@ -58,7 +52,7 @@ impl Display {
     }
     pub fn clear(&mut self) {
         // TOOD: just clear through renderer
-        self.buffer = [[0; DISPLAY_X_PIXELS / 8]; DISPLAY_Y_PIXELS];
+        self.buffer = [[0; DISPLAY_X_PIXELS]; DISPLAY_Y_PIXELS];
         eprintln!("cleared screen!")
     }
 }
