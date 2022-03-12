@@ -78,22 +78,22 @@ impl CPU {
         }
     }
     pub fn load_default_font(&mut self) {
-        for (i, &byte) in FONTS.iter().enumerate() {
-            let starting_mem = 0x50;
-            self.mem[i + starting_mem] = byte;
-        }
+        let starting_mem = 0x50;
+        let range = starting_mem..(starting_mem + FONTS.len());
+
+        self.mem[range].copy_from_slice(&FONTS);
     }
     pub fn load_rom(&mut self, path: &str) {
         info!("Loading ROM: {path}");
         let mut file_content: Vec<u8> = vec![];
-
         let mut file = File::open(&path).expect("Unable to open file");
         file.read_to_end(&mut file_content).expect("Unable to read");
 
-        for (i, &byte) in file_content.iter().enumerate() {
-            let starting_mem = 512;
-            self.mem[i + starting_mem] = byte;
-        }
+        let starting_mem = 512;
+        let range = starting_mem..(starting_mem + file_content.len());
+
+        self.mem[range].copy_from_slice(&file_content);
+
         info!("ROM loaded!");
     }
     fn fetch(&mut self) -> u16 {
