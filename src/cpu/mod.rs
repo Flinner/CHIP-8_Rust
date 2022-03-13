@@ -103,7 +103,7 @@ impl CPU {
         let big = self.mem[pc];
         let little = self.mem[pc + 1];
 
-        self.pc += 2;
+        self.increment_pc();
 
         ((big as u16) << 8) + little as u16
     }
@@ -160,6 +160,10 @@ impl CPU {
         trace!("pc: {:X?}", self.pc);
         //trace!("stack_pointer: {:?}", self.??);
     }
+    pub fn increment_pc(&mut self) {
+        self.pc += 2
+    }
+
     pub fn decode_and_execture(&mut self) {
         let decoded = self.decode();
         self.exectue(decoded)
