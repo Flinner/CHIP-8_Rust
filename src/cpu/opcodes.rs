@@ -7,14 +7,43 @@ pub(super) fn clear_screen() {
     unsafe { DISPLAY.clear() }
     trace!("Cleared Screen!");
 }
+
 /// 00EE - RET
+pub(super) fn return_subroutine(cpu: &mut CPU) {
+    cpu.pc = cpu.stack[cpu.stack_p];
+    cpu.stack_p -= 1;
+
+    //jump
+    trace!("after RET");
+    trace!("stack: {:X?}", cpu.stack);
+    trace!("stack_p:{:X} ;PC = {:X}", cpu.stack_p, cpu.pc)
+}
+
 /// 0nnn - SYS addr
 /// 1nnn - JP addr
 pub(super) fn jump_nnn(cpu: &mut CPU, nnn: u16) {
     cpu.pc = nnn;
     trace!("PC = {nnn:X}")
 }
+
 /// 2nnn - CALL addr
+pub(super) fn call_subroutine(cpu: &mut CPU, nnn: u16) {
+    trace!("before JMP");
+    trace!("stack: {:X?}", cpu.stack);
+    trace!("stack_p:{:X} ;PC = {nnn:X}", cpu.stack_p);
+    let current_pc = cpu.pc;
+    cpu.stack_p += 1;
+
+    // save pc
+    cpu.stack[cpu.stack_p] = current_pc;
+
+    //jump
+    cpu.pc = nnn;
+    trace!("after JMP");
+    trace!("stack: {:X?}", cpu.stack);
+    trace!("stack_p:{:X} ;PC = {nnn:X}", cpu.stack_p)
+}
+
 /// 3xkk - SE Vx, byte
 /// 4xkk - SNE Vx, byte
 /// 5xy0 - SE Vx, Vy
