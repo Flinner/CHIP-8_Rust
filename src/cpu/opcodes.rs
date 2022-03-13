@@ -101,8 +101,9 @@ pub(super) fn draw(cpu: &mut CPU, x: usize, y: usize, n: u8) {
     let i_reg = cpu.index_register;
 
     // memory range that should be displayed
-    let disp_mem = i_reg..(i_reg + (n as usize));
-    cpu.reg[0xF] = unsafe { DISPLAY.update_from_mem(cpu.reg[x], cpu.reg[y], &cpu.mem[disp_mem]) };
+    let sprite_range = i_reg..(i_reg + (n as usize));
+    cpu.reg[0xF] =
+        unsafe { DISPLAY.update_from_mem(cpu.reg[x], cpu.reg[y], &cpu.mem[sprite_range]) };
 
     trace!("reg[F] = {}", cpu.reg[0xF])
 }
