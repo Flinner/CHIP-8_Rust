@@ -45,6 +45,12 @@ pub(super) fn call_subroutine(cpu: &mut CPU, nnn: u16) {
 }
 
 /// 3xkk - SE Vx, byte
+pub(super) fn skip_if_vx_eq_nn(cpu: &mut CPU, x: usize, nn: u8) {
+    if cpu.reg[x] == nn {
+        cpu.increment_pc()
+    }
+}
+
 /// 4xkk - SNE Vx, byte
 /// 5xy0 - SE Vx, Vy
 /// 6xkk - LD Vx, byte
