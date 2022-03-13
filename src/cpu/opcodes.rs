@@ -71,8 +71,8 @@ pub(super) fn set_reg_x_nn(cpu: &mut CPU, x: usize, nn: u8) {
 
 /// 7xkk - ADD Vx, byte
 pub(super) fn add_reg_x_nn(cpu: &mut CPU, x: usize, nn: u8) {
-    cpu.reg[x] += nn;
-    trace!("reg[{x:X}] += {nn:X} = {:X}", cpu.reg[x] + nn)
+    cpu.reg[x] = cpu.reg[x].overflowing_add(nn).0;
+    trace!("reg[{x:X}] += {nn:X} = {:X}", cpu.reg[x])
 }
 /// 8xy0 - LD Vx, Vy
 /// 8xy1 - OR Vx, Vy
