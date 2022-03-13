@@ -140,19 +140,42 @@ impl CPU {
     ) {
         trace!("decoded: {n1:X}{x:X}{y:X}{n:X}; PC: {:X}", self.pc - 2);
         match (n1, x, y, n) {
-            (0, 0, 0, 0) => warn!("Uninitialized memory!"),
-            (0x0, 0, 0xE, 0) => opcodes::clear_screen(),
-            // Jump to NNN
-            (0x1, _, _, _) => opcodes::jump_nnn(self, nnn),
-            // set Register x to NN
-            (0x6, _, _, _) => opcodes::set_reg_x_nn(self, x, nn),
-            // add NN to Register x
-            (0x7, _, _, _) => opcodes::add_reg_x_nn(self, x, nn),
-            // set index Register to NNN
-            (0xA, _, _, _) => opcodes::set_index_reg_nnn(self, nnn as usize),
-            // Display/Draw x y n
-            (0xD, x, y, _n) => opcodes::draw(self, x, y, n),
-            // _ => (),
+            (0x0, 0x0, 0x0, 0x0) => warn!("Uninitialized memory!"),
+            (0x0, 0x0, 0xE, 0x0) => opcodes::clear_screen(),
+            (0x0, 0x0, 0xE, 0xE) => opcodes::return_subroutine(self),
+            (0x0, _, _, _) /*. */=> warn!("Not executing Machine language routine!"),
+            (0x1, _, _, _) /*. */=> opcodes::jump_nnn(self, nnn),
+            (0x2, _, _, _) /*. */=> opcodes::call_subroutine(self, nnn),
+            (0x3, _, _, _) /*. */=> opcodes::skip_if_vx_eq_nn(self , x, nn),
+            (0x4, _, _, _) /*. */=> opcodes::skip_if_vx_neq_nn(self , x, nn),
+            (0x5, _, _, 0x0)/*.*/=> opcodes::skip_if_vx_eq_vy(self, x, y),
+            (0x6, _, _, _) /*. */=> opcodes::set_reg_x_nn(self, x, nn),
+            (0x7, _, _, _) /*. */=> opcodes::add_reg_x_nn(self, x, nn),
+            (0x8, _, _, 0x0)/*.*/=> todo!("8xy0"),
+            (0x8, _, _, 0x1)/*.*/=> todo!("8xy1"),
+            (0x8, _, _, 0x2)/*.*/=> todo!("8xy2"),
+            (0x8, _, _, 0x3)/*.*/=> todo!("8xy3"),
+            (0x8, _, _, 0x4)/*.*/=> todo!("8xy4"),
+            (0x8, _, _, 0x5)/*.*/=> todo!("8xy5"),
+            (0x8, _, _, 0x6)/*.*/=> todo!("8xy6"),
+            (0x8, _, _, 0x7)/*.*/=> todo!("8xy7"),
+            (0x8, _, _, 0xE)/*.*/=> todo!("8xyE"),
+            (0x9, _, _, 0x0)/*.*/=> opcodes::skip_if_vx_neq_vy(self, x, y),
+            (0xA, _, _, _) /*. */=> opcodes::set_index_reg_nnn(self, nnn as usize),
+            (0xB, _, _, _) /*. */=> todo!("Bnnn"),
+            (0xC, _, _, _) /*. */=> todo!("Cxkk"),
+            (0xD, _, _, _) /*. */=> opcodes::draw(self, x, y, n),
+            (0xE, _, 0x9, 0xE)   => todo!("Ex9E"),
+            (0xE, _, 0xA, 0x1)   => todo!("ExA1"),
+            (0xF, _, 0x0, 0x7)   => todo!("Fx07"),
+            (0xF, _, 0x0, 0xA)   => todo!("Fx0A"),
+            (0xF, _, 0x1, 0x5)   => todo!("Fx15"),
+            (0xF, _, 0x1, 0x8)   => todo!("Fx18"),
+            (0xF, _, 0x1, 0xE)   => todo!("Fx1E"),
+            (0xF, _, 0x2, 0x9)   => todo!("Fx29"),
+            (0xF, _, 0x3, 0x3)   => todo!("Fx33"),
+            (0xF, _, 0x5, 0x5)   => todo!("Fx55"),
+            (0xF, _, 0x6, 0x5)   => todo!("Fx65"),
             a => todo!("Instruction Not yet Implemented!: {a:X?}"),
         };
         trace!("reg: {:X?}", self.reg);
