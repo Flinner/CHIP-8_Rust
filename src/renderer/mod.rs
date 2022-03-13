@@ -58,5 +58,5 @@ impl Backend {
 
 // iterate over bits
 pub fn binary_iter(n: u8) -> impl Iterator<Item = u8> {
-    (1..=8).map(move |i| (n << (8 - i)) >> 7)
+    (1..=8).rev().map(move |i| (n << (8 - i)) >> 7)
 }
