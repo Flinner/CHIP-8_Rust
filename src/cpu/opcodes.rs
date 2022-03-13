@@ -84,6 +84,11 @@ pub(super) fn add_reg_x_nn(cpu: &mut CPU, x: usize, nn: u8) {
 /// 8xy7 - SUBN Vx, Vy
 /// 8xyE - SHL Vx {, Vy}
 /// 9xy0 - SNE Vx, Vy
+pub(super) fn skip_if_vx_neq_vy(cpu: &mut CPU, x: usize, y: usize) {
+    if cpu.reg[x] != cpu.reg[y] {
+        cpu.increment_pc()
+    }
+}
 /// Annn - LD I, addr
 pub(super) fn set_index_reg_nnn(cpu: &mut CPU, nnn: usize) {
     cpu.index_register = nnn;
