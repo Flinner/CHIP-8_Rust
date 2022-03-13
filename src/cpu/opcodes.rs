@@ -58,6 +58,11 @@ pub(super) fn skip_if_vx_neq_nn(cpu: &mut CPU, x: usize, nn: u8) {
     }
 }
 /// 5xy0 - SE Vx, Vy
+pub(super) fn skip_if_vx_eq_vy(cpu: &mut CPU, x: usize, y: usize) {
+    if cpu.reg[x] == cpu.reg[y] {
+        cpu.increment_pc()
+    }
+}
 /// 6xkk - LD Vx, byte
 pub(super) fn set_reg_x_nn(cpu: &mut CPU, x: usize, nn: u8) {
     cpu.reg[x] = nn;
