@@ -32,6 +32,7 @@ pub struct CPU {
     pub pc: u16,
     pub index_register: usize,
     pub stack: [u16; 16],
+    pub stack_p: usize,
     // delay_timer: u8,
     // sound_timer: u8,
     pub reg: [u8; 16],
@@ -75,6 +76,7 @@ impl CPU {
             index_register: 0,
             stack: Default::default(),
             reg: Default::default(),
+            stack_p: 0,
         }
     }
     pub fn load_default_font(&mut self) {
