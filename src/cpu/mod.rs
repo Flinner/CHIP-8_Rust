@@ -151,7 +151,7 @@ impl CPU {
             (0x5, _, _, 0x0)/*.*/=> opcodes::skip_if_vx_eq_vy(self, x, y),
             (0x6, _, _, _) /*. */=> opcodes::set_reg_x_nn(self, x, nn),
             (0x7, _, _, _) /*. */=> opcodes::add_reg_x_nn(self, x, nn),
-            (0x8, _, _, 0x0)/*.*/=> todo!("8xy0"),
+            (0x8, _, _, 0x0)/*.*/=> opcodes::set_vx_to_vy(self, x, y),
             (0x8, _, _, 0x1)/*.*/=> todo!("8xy1"),
             (0x8, _, _, 0x2)/*.*/=> todo!("8xy2"),
             (0x8, _, _, 0x3)/*.*/=> todo!("8xy3"),

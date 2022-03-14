@@ -75,6 +75,10 @@ pub(super) fn add_reg_x_nn(cpu: &mut CPU, x: usize, nn: u8) {
     trace!("reg[{x:X}] += {nn:X} = {:X}", cpu.reg[x])
 }
 /// 8xy0 - LD Vx, Vy
+pub(super) fn set_vx_to_vy(cpu: &mut CPU, x: usize, y: usize) {
+    cpu.reg[x] = cpu.reg[y];
+    trace!("reg[{x:X}] = reg[{y:X}] = {:X}", cpu.reg[x]);
+}
 /// 8xy1 - OR Vx, Vy
 /// 8xy2 - AND Vx, Vy
 /// 8xy3 - XOR Vx, Vy
