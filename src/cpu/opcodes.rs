@@ -74,15 +74,41 @@ pub(super) fn add_reg_x_nn(cpu: &mut CPU, x: usize, nn: u8) {
     cpu.reg[x] = cpu.reg[x].overflowing_add(nn).0;
     trace!("reg[{x:X}] += {nn:X} = {:X}", cpu.reg[x])
 }
+
 /// 8xy0 - LD Vx, Vy
 pub(super) fn set_vx_to_vy(cpu: &mut CPU, x: usize, y: usize) {
     cpu.reg[x] = cpu.reg[y];
     trace!("reg[{x:X}] = reg[{y:X}] = {:X}", cpu.reg[x]);
 }
+
 /// 8xy1 - OR Vx, Vy
+pub(super) fn or_vx_vy(cpu: &mut CPU, x: usize, y: usize) {
+    cpu.reg[x] |= cpu.reg[y];
+    trace!("reg[{x:X}] |= reg[{y:X}] = {:X}", cpu.reg[x]);
+}
+
 /// 8xy2 - AND Vx, Vy
+pub(super) fn and_vx_vy(cpu: &mut CPU, x: usize, y: usize) {
+    cpu.reg[x] &= cpu.reg[y];
+    trace!("reg[{x:X}] |= reg[{y:X}] = {:X}", cpu.reg[x]);
+}
+
 /// 8xy3 - XOR Vx, Vy
+pub(super) fn xor_vx_vy(cpu: &mut CPU, x: usize, y: usize) {
+    cpu.reg[x] ^= cpu.reg[y];
+    trace!("reg[{x:X}] |= reg[{y:X}] = {:X}", cpu.reg[x]);
+}
+
 /// 8xy4 - ADD Vx, Vy
+pub(super) fn add_vx_to_vy_carry_flag(cpu: &mut CPU, x: usize, nn: u8) {
+    let (sum, overflow) = cpu.reg[x].overflowing_add(nn);
+    let overflow = if overflow { 1 } else { 0 };
+
+    cpu.reg[x] = sum;
+    cpu.reg[0xF] = overflow;
+    trace!("reg[{x:X}] += {nn:X} = {:X}", cpu.reg[x]);
+    trace!("overflow: reg[0xF]={}", overflow);
+}
 /// 8xy5 - SUB Vx, Vy
 /// 8xy6 - SHR Vx {, Vy}
 /// 8xy7 - SUBN Vx, Vy
