@@ -109,9 +109,28 @@ pub(super) fn add_vx_to_vy_carry_flag(cpu: &mut CPU, x: usize, nn: u8) {
     trace!("reg[{x:X}] += {nn:X} = {:X}", cpu.reg[x]);
     trace!("overflow: reg[0xF]={}", overflow);
 }
+
 /// 8xy5 - SUB Vx, Vy
+pub(super) fn sub_vx_vy(cpu: &mut CPU, x: usize, y: usize) {
+    let (result, overflow) = cpu.reg[x].overflowing_sub(cpu.reg[y]);
+    let overflow = if overflow { 1 } else { 0 };
+
+    cpu.reg[x] = result;
+    cpu.reg[0xF] = overflow;
+    trace!("reg[{x:X}] -= reg[{y:X}] = {:X}", cpu.reg[x]);
+    trace!("overflow: reg[0xF]={}", overflow);
+}
 /// 8xy6 - SHR Vx {, Vy}
 /// 8xy7 - SUBN Vx, Vy
+pub(super) fn sub_vy_vx(cpu: &mut CPU, x: usize, y: usize) {
+    let (result, overflow) = cpu.reg[y].overflowing_sub(cpu.reg[x]);
+    let overflow = if overflow { 1 } else { 0 };
+
+    cpu.reg[x] = result;
+    cpu.reg[0xF] = overflow;
+    trace!("reg[{x:X}] -= reg[{y:X}] = {:X}", cpu.reg[x]);
+    trace!("overflow: reg[0xF]={}", overflow);
+}
 /// 8xyE - SHL Vx {, Vy}
 /// 9xy0 - SNE Vx, Vy
 pub(super) fn skip_if_vx_neq_vy(cpu: &mut CPU, x: usize, y: usize) {
