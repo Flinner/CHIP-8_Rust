@@ -1,4 +1,4 @@
-use crate::display::DISPLAY;
+use crate::{config::Config, display::DISPLAY};
 
 use super::CPU;
 
@@ -120,7 +120,21 @@ pub(super) fn sub_vx_vy(cpu: &mut CPU, x: usize, y: usize) {
     trace!("reg[{x:X}] -= reg[{y:X}] = {:X}", cpu.reg[x]);
     trace!("overflow: reg[0xF]={}", overflow);
 }
+
 /// 8xy6 - SHR Vx {, Vy}
+pub(super) fn shift_vy_right(cpu: &mut CPU, x: usize, y: usize) {
+    // configurable to support multiple game (?)
+    let to_shift = if Config::get().shift_vx { x } else { y };
+
+    cpu.reg[x] = cpu.reg[to_shift] >> 1;
+    cpu.reg[0xF] = cpu.reg[to_shift] & 1;
+
+    trace!(
+        "reg[{x:X}] = cpu.reg[{to_shift:X}] >> 1  = {:X}",
+        cpu.reg[x]
+    );
+}
+
 /// 8xy7 - SUBN Vx, Vy
 pub(super) fn sub_vy_vx(cpu: &mut CPU, x: usize, y: usize) {
     let (result, overflow) = cpu.reg[y].overflowing_sub(cpu.reg[x]);
@@ -131,7 +145,20 @@ pub(super) fn sub_vy_vx(cpu: &mut CPU, x: usize, y: usize) {
     trace!("reg[{x:X}] -= reg[{y:X}] = {:X}", cpu.reg[x]);
     trace!("overflow: reg[0xF]={}", overflow);
 }
+
 /// 8xyE - SHL Vx {, Vy}
+pub(super) fn shift_vy_left(cpu: &mut CPU, x: usize, y: usize) {
+    // configurable to support multiple game (?)
+    let to_shift = if Config::get().shift_vx { x } else { y };
+
+    cpu.reg[x] = cpu.reg[to_shift] << 1;
+    cpu.reg[0xF] = cpu.reg[to_shift] & 1;
+
+    trace!(
+        "reg[{x:X}] = cpu.reg[{to_shift:X}] >> 1  = {:X}",
+        cpu.reg[x]
+    );
+}
 /// 9xy0 - SNE Vx, Vy
 pub(super) fn skip_if_vx_neq_vy(cpu: &mut CPU, x: usize, y: usize) {
     if cpu.reg[x] != cpu.reg[y] {
