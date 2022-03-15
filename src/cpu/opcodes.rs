@@ -170,7 +170,27 @@ pub(super) fn set_index_reg_nnn(cpu: &mut CPU, nnn: usize) {
     cpu.index_register = nnn;
     trace!("index_reg = {nnn:X}")
 }
-/// Bnnn - JP V0, addr
+
+/// Bnnn - JP V0, addr if `Config.jmp_offset_v0: true`
+/// Bxnn - JP Vx, addr if `Config.jmp_offset_v0: false`
+pub(super) fn jump_with_offset(cpu: &mut CPU, nnn: usize, x: usize, nn: u8) {
+    if Config::get().jmp_offset_v0 {
+        cpu.index_register = nnn + cpu.reg[0] as usize;
+
+        trace!(
+            "index_reg = {nnn:X} + cput.reg[0] = {:X}",
+            cpu.index_register
+        )
+    } else {
+        cpu.index_register = nn as usize + cpu.reg[x] as usize;
+
+        trace!(
+            "index_reg = {nn:X} + cput.reg[{x:X}] = {:X}",
+            cpu.index_register
+        )
+    }
+}
+
 /// Cxkk - RND Vx, byte
 pub(super) fn random_to_vx(cpu: &mut CPU, x: usize, nn: u8) {
     let random: u8 = random::get_random_max(255) as u8;
