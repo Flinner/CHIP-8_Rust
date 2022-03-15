@@ -1,4 +1,4 @@
-use crate::{config::Config, display::DISPLAY};
+use crate::{config::Config, display::DISPLAY, random};
 
 use super::CPU;
 
@@ -172,6 +172,11 @@ pub(super) fn set_index_reg_nnn(cpu: &mut CPU, nnn: usize) {
 }
 /// Bnnn - JP V0, addr
 /// Cxkk - RND Vx, byte
+pub(super) fn random_to_vx(cpu: &mut CPU, x: usize, nn: u8) {
+    let random: u8 = random::get_random_max(255) as u8;
+    cpu.reg[x] = random & nn;
+}
+
 /// Dxyn - DRW Vx, Vy, nibble
 pub(super) fn draw(cpu: &mut CPU, x: usize, y: usize, n: u8) {
     let i_reg = cpu.index_register;
@@ -195,4 +200,5 @@ pub(super) fn draw(cpu: &mut CPU, x: usize, y: usize, n: u8) {
 /// Fx55 - LD [I], Vx
 /// Fx65 - LD Vx, [I]
 
+// to keep comments lol
 struct Tmp {}

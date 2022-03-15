@@ -163,7 +163,7 @@ impl CPU {
             (0x9, _, _, 0x0)     => opcodes::skip_if_vx_neq_vy		(self, x, y),
             (0xA, _, _, _)       => opcodes::set_index_reg_nnn		(self, nnn as usize),
             (0xB, _, _, _)       => opcodes::jump_with_offset		(self, nnn as usize, x, nn),
-            (0xC, _, _, _)       => todo!("Cxkk"),
+            (0xC, _, _, _)       => opcodes::random_to_vx               (self ,x,nn),
             (0xD, _, _, _)       => opcodes::draw                       (self, x, y, n),
             (0xE, _, 0x9, 0xE)   => todo!("Ex9E"),
             (0xE, _, 0xA, 0x1)   => todo!("ExA1"),
