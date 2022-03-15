@@ -1,4 +1,4 @@
-use crate::{config::Config, display::DISPLAY, random};
+use crate::{config::Config, display::DISPLAY, random, renderer};
 
 use super::CPU;
 
@@ -209,6 +209,13 @@ pub(super) fn draw(cpu: &mut CPU, x: usize, y: usize, n: u8) {
     trace!("reg[F] = {}", cpu.reg[0xF])
 }
 /// Ex9E - SKP Vx
+pub(super) fn skip_if_vx_eq_key_pressed(cpu: &mut CPU, x: usize) {
+    let renderer = renderer::get();
+
+    if renderer.is_key_down(cpu.reg[x]) {
+        cpu.increment_pc()
+    }
+}
 /// ExA1 - SKNP Vx
 /// Fx07 - LD Vx, DT
 /// Fx0A - LD Vx, K

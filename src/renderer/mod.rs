@@ -1,5 +1,6 @@
 //mod raylib;
 
+mod keyboard;
 mod raylib;
 mod terminal;
 
@@ -51,7 +52,17 @@ impl Backend {
     pub fn should_close(&mut self) -> bool {
         match self {
             Self::Raylib { rl, thread: _ } => raylib::should_close(rl),
-            Self::Terminal => false,
+            Self::Terminal => false, // TODO!
+        }
+    }
+
+    /// Returns if the key currently being pressed
+    /// Value between `0` and `F`
+    /// non blocking
+    pub fn is_key_down(&mut self, key: u8) -> bool {
+        match self {
+            Backend::Raylib { rl: _, thread: _ } => todo!(),
+            Backend::Terminal => terminal::is_key_down(key),
         }
     }
 }
