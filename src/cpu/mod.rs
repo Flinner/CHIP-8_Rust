@@ -1,8 +1,6 @@
 mod opcodes;
 
-use std::{fs::File, io::Read, time::Duration};
-
-use crate::display::{self, DISPLAY};
+use std::{fs::File, io::Read};
 
 const FONTS: [u8; 80] = [
     0xF0, 0x90, 0x90, 0x90, 0xF0, // 0

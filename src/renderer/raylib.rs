@@ -1,12 +1,9 @@
 use raylib::color::Color;
-use raylib::consts::KeyboardKey;
 use raylib::prelude::RaylibDraw;
 use raylib::{RaylibHandle, RaylibThread};
 
 use crate::display::Display;
 use crate::keyboard;
-
-use super::binary_iter;
 
 pub fn render(rl: &mut RaylibHandle, thread: &mut RaylibThread, display: &Display) {
     let mut d = rl.begin_drawing(thread);

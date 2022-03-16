@@ -1,10 +1,4 @@
 use crate::display::Display;
-use std::io;
-use std::io::Read;
-use std::sync::mpsc;
-use std::sync::mpsc::Receiver;
-use std::sync::mpsc::TryRecvError;
-use std::{thread, time};
 
 pub fn render(display: &Display) {
     let mut fmted_grid = String::with_capacity(64);
