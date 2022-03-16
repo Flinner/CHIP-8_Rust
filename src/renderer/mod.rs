@@ -1,6 +1,5 @@
 //mod raylib;
 
-mod keyboard;
 mod raylib;
 mod terminal;
 
@@ -62,7 +61,7 @@ impl Backend {
     pub fn is_key_down(&mut self, key: u8) -> bool {
         match self {
             Backend::Raylib { rl: _, thread: _ } => todo!(),
-            Backend::Terminal => terminal::is_key_down(key),
+            Backend::Terminal => todo!(),
         }
     }
 }

@@ -1,11 +1,10 @@
 use crate::display::Display;
 use std::io;
+use std::io::Read;
 use std::sync::mpsc;
 use std::sync::mpsc::Receiver;
 use std::sync::mpsc::TryRecvError;
 use std::{thread, time};
-
-use super::keyboard::get_keycode;
 
 pub fn render(display: &Display) {
     let mut fmted_grid = String::with_capacity(64);
@@ -21,31 +20,4 @@ pub fn render(display: &Display) {
         fmted_grid += "\n";
     }
     println!("{fmted_grid}");
-}
-
-pub fn is_key_down(key: u8) -> bool {
-    let stdin_channel = spawn_stdin_channel();
-    if let Ok(ikey) = stdin_channel.try_recv()
-    && key ==  get_keycode(ikey)
-    {
-        trace!("Pressed: {key}");
-        true
-    } else {
-        false
-    }
-}
-
-fn spawn_stdin_channel() -> Receiver<String> {
-    let (tx, rx) = mpsc::channel::<String>();
-    thread::spawn(move || loop {
-        let mut buffer = String::new();
-        io::stdin().read_line(&mut buffer).unwrap();
-        tx.send(buffer).unwrap();
-    });
-    rx
-}
-
-fn sleep(millis: u64) {
-    let duration = time::Duration::from_millis(millis);
-    thread::sleep(duration);
 }
