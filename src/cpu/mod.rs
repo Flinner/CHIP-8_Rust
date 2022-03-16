@@ -171,7 +171,7 @@ impl CPU {
             (0xF, _, 0x0, 0x7)   => opcodes::set_vx_to_delay_timer		(self, x),
             (0xF, _, 0x0, 0xA)   => todo!("Fx15"),
             (0xF, _, 0x1, 0x5)   => opcodes::set_delay_timer_to_vx		(self, x),
-            (0xF, _, 0x1, 0x8)   => todo!("Fx18"),
+            (0xF, _, 0x1, 0x8)   => opcodes::set_sound_timer_to_vx		(self, x),
             (0xF, _, 0x1, 0xE)   => todo!("Fx1E"),
             (0xF, _, 0x2, 0x9)   => todo!("Fx29"),
             (0xF, _, 0x3, 0x3)   => todo!("Fx33"),

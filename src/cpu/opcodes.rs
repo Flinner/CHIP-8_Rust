@@ -236,6 +236,10 @@ pub(super) fn set_delay_timer_to_vx(cpu: &mut CPU, x: usize) {
     trace!("delay_timer = reg[{x:X}] = {:X} ", cpu.delay_timer)
 }
 /// Fx18 - LD ST, Vx
+pub(super) fn set_sound_timer_to_vx(cpu: &mut CPU, x: usize) {
+    cpu.sound_timer = cpu.reg[x];
+    trace!("sound_timer = reg[{x:X}] = {:X} ", cpu.sound_timer)
+}
 /// Fx1E - ADD I, Vx
 /// Fx29 - LD F, Vx
 /// Fx33 - LD B, Vx
