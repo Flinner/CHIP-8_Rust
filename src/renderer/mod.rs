@@ -60,7 +60,7 @@ impl Backend {
     /// non blocking
     pub fn is_key_down(&mut self, key: u8) -> bool {
         match self {
-            Backend::Raylib { rl: _, thread: _ } => todo!(),
+            Backend::Raylib { rl, thread: _ } => raylib::is_key_down(rl, key),
             Backend::Terminal => todo!(),
         }
     }

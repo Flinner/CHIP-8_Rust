@@ -1,8 +1,10 @@
 use raylib::color::Color;
+use raylib::consts::KeyboardKey;
 use raylib::prelude::RaylibDraw;
 use raylib::{RaylibHandle, RaylibThread};
 
 use crate::display::Display;
+use crate::keyboard;
 
 use super::binary_iter;
 
@@ -31,5 +33,15 @@ fn bit_color(bit: u8) -> Color {
         0 => Color::BLACK,
         1 => Color::WHITE,
         _ => panic!(),
+    }
+}
+
+pub fn is_key_down(rl: &mut RaylibHandle, key: u8) -> bool {
+    if let Some(key) = keyboard::key_mapping(key) {
+        let pressed = rl.is_key_down(key);
+        trace!("{key:?}: is pressed? {pressed}");
+        pressed
+    } else {
+        false
     }
 }
