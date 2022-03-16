@@ -217,9 +217,24 @@ pub(super) fn skip_if_vx_eq_key_pressed(cpu: &mut CPU, x: usize) {
     }
 }
 /// ExA1 - SKNP Vx
+pub(super) fn skip_if_vx_eq_key_not_pressed(cpu: &mut CPU, x: usize) {
+    let renderer = renderer::get();
+
+    if !renderer.is_key_down(cpu.reg[x]) {
+        cpu.increment_pc()
+    }
+}
 /// Fx07 - LD Vx, DT
+pub(super) fn set_vx_to_delay_timer(cpu: &mut CPU, x: usize) {
+    cpu.reg[x] = cpu.delay_timer;
+    trace!("reg[{x:X}] = {:X}", cpu.reg[x])
+}
 /// Fx0A - LD Vx, K
 /// Fx15 - LD DT, Vx
+pub(super) fn set_delay_timer_to_vx(cpu: &mut CPU, x: usize) {
+    cpu.delay_timer = cpu.reg[x];
+    trace!("delay_timer = reg[{x:X}] = {:X} ", cpu.delay_timer)
+}
 /// Fx18 - LD ST, Vx
 /// Fx1E - ADD I, Vx
 /// Fx29 - LD F, Vx
