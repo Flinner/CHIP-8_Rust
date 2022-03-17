@@ -241,6 +241,17 @@ pub(super) fn set_sound_timer_to_vx(cpu: &mut CPU, x: usize) {
     trace!("sound_timer = reg[{x:X}] = {:X} ", cpu.sound_timer)
 }
 /// Fx1E - ADD I, Vx
+pub(super) fn add_vx_to_index(cpu: &mut CPU, x: usize) {
+    let i = cpu.index_register;
+    let vx = cpu.reg[x];
+    let (sum, overflow) = i.overflowing_add(vx);
+    let overflow = if overflow { 1 } else { 0 };
+
+    cpu.index_register = sum;
+    cpu.reg[0xF] = overflow;
+    trace!("index_reg += cpu.reg[{x:X}] = {sum:X}");
+    trace!("overflow={overflow}");
+}
 /// Fx29 - LD F, Vx
 /// Fx33 - LD B, Vx
 /// Fx55 - LD [I], Vx
