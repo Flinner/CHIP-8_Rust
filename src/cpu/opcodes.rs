@@ -166,16 +166,16 @@ pub(super) fn skip_if_vx_neq_vy(cpu: &mut CPU, x: usize, y: usize) {
     }
 }
 /// Annn - LD I, addr
-pub(super) fn set_index_reg_nnn(cpu: &mut CPU, nnn: usize) {
-    cpu.index_register = nnn;
+pub(super) fn set_index_reg_nnn(cpu: &mut CPU, nnn: u16) {
+    cpu.index_register = nnn as usize;
     trace!("index_reg = {nnn:X}")
 }
 
 /// Bnnn - JP V0, addr if `Config.jmp_offset_v0: true`
 /// Bxnn - JP Vx, addr if `Config.jmp_offset_v0: false`
-pub(super) fn jump_with_offset(cpu: &mut CPU, nnn: usize, x: usize, nn: u8) {
+pub(super) fn jump_with_offset(cpu: &mut CPU, nnn: u16, x: usize, nn: u8) {
     if Config::get().jmp_offset_v0 {
-        cpu.index_register = nnn + cpu.reg[0] as usize;
+        cpu.index_register = nnn as usize + cpu.reg[0] as usize;
 
         trace!(
             "index_reg = {nnn:X} + cput.reg[0] = {:X}",
